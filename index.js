@@ -1,7 +1,11 @@
 const express = require('express')
+const path = require('path');
 const app = express();
 app.use(express.json());
 const PORT = 4000
+app.set('views', path.join(__dirname, 'views'));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, 'public')));
 
 const users = [  
   {
@@ -16,8 +20,8 @@ app.get('/', (req, res) => {
     res.send('Welcome to the User Management');
 })
 
-app.get('/users', (req, res) =>{
-  res.json({"users" : users});
+app.get('/users', (req, res) =>{  
+  res.render('index', {title : "User List", users : users} );
 })
 
 app.post('/user', (req, res) =>{
@@ -86,7 +90,9 @@ app.get('/search', (req, res) =>{
   const {name, city} = req.query;
 
   const filterUser = users.filter(user => {
-     if(user.name == name || user.city == city){
+
+     if( user.name.toLowerCase().includes(name.toLowerCase()) 
+        || user.city.toLowerCase() == city.toLocaleLowerCase()){
         return user;
      }
   })
